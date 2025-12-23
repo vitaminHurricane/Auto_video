@@ -1,3 +1,4 @@
+import user_config
 import mss
 import cv2
 from pynput import keyboard
@@ -5,38 +6,45 @@ import numpy as np
 import monitor
 import time
 
-
-
-
-##################################配置区域##########################################
-
-SideBar_Direct = 'left'         #侧边栏位置，只能为left或者right
-Screen_Width = 2560             #屏幕尺寸->宽度
-Screen_Height = 1600            #屏幕尺寸->高度
-Version = 'old'                 #学习通网页版版本，只能为old或者new
-
-##################################结束配置##########################################
-
-
-
+SideBar_Direct = user_config.SideBar_Direct     #侧边栏位置，只能为left或者right
+Screen_Width = user_config.Screen_Width         #屏幕尺寸->宽度
+Screen_Height = user_config.Screen_Height       #屏幕尺寸->高度
+Version = user_config.Version                   #学习通网页版版本，只能为old或者new
+Original = user_config.Original                 #是否是原生板网页（未装插件），原生态则为True，使用了插件则为False（这里装插件的情况下只能适配edge浏览器上的Dark Reader插件）
 
 start_flag = False
 
 #关键点色彩阈值
-if Version == 'old':
-    color_dict = {
-        # 老版本
-        'unread_color_red': np.array([[0, 52, 159], [44, 80, 186]]),
-        'unread_color_yellow': np.array([[45, 168, 254], [78, 200, 255]]),
-        'select_green': np.array([[39, 133, 103], [43, 137, 107]]),  
-    }
-elif Version == 'new':
-    color_dict = {
-        # 新版本
-        'unread_color_red': np.array([[71, 178, 247], [120, 211, 253]]),
-        'unread_color_yellow': np.array([[45, 168, 254], [78, 200, 255]]),
-        'select_green': np.array([[39, 133, 103], [43, 137, 107]]),
-    }
+if Original:    #原生态配色
+    if Version == 'old':
+        color_dict = {
+            # 老版本
+            'unread_color_red': np.array([[46, 114, 233], [69, 130, 255]]),
+            'unread_color_yellow': np.array([[45, 168, 254], [78, 200, 255]]),
+            'select_green': np.array([[47, 149, 118], [63, 160, 132]]),  
+        }
+    elif Version == 'new':
+        color_dict = {
+            # 新版本
+            'unread_color_red': np.array([[68, 164, 233], [140, 232, 254]]),
+            'unread_color_yellow': np.array([[45, 168, 254], [78, 200, 255]]),
+            'select_green': np.array([[39, 133, 103], [43, 137, 107]]),  
+        }
+else:       #使用Dark Reader插件后的配色
+    if Version == 'old':
+        color_dict = {
+            # 老版本
+            'unread_color_red': np.array([[0, 52, 159], [44, 80, 186]]),
+            'unread_color_yellow': np.array([[45, 168, 254], [78, 200, 255]]),
+            'select_green': np.array([[39, 133, 103], [43, 137, 107]]),  
+        }
+    elif Version == 'new':
+        color_dict = {
+            # 新版本
+            'unread_color_red': np.array([[71, 178, 247], [120, 211, 253]]),
+            'unread_color_yellow': np.array([[45, 168, 254], [78, 200, 255]]),
+            'select_green': np.array([[39, 133, 103], [43, 137, 107]]),
+        }
 
 def main():
     #初始化mss用于屏幕捕获

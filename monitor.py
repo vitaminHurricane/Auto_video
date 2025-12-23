@@ -38,7 +38,7 @@ class monitor_sidebar():
                 elif side == 'right':
                     mouseact.mouse_move_click(int(main.Screen_Width / 11 * 10), int(main.Screen_Height / 2))
                 time.sleep(0.1)
-                mouseact.mouse_scroll('down', 30 * 10)
+                mouseact.mouse_scroll('down', 30 * 12)
                 new_screen = main.screen_update()
                 repeat_time += 1
                 self.update(new_screen, repeat_time, side)
@@ -51,19 +51,19 @@ class monitor_sidebar():
             self.cur_index = index
             self.cur_index_x, self.cur_index_y = watching.img_get_location(self.contours, self.cur_index)
             mouseact.mouse_move_click(self.cur_index_x - 13 * self.edge_length, self.cur_index_y + int(self.edge_length / 4), clicks = 1)
-            new_screen = main.screen_update()
-            contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1])
-            if main.Version == 'old':
-                while contours_select == [] and Monitor_Flag:
-                    mouseact.mouse_move_click(self.cur_index_x - 13 * self.edge_length, self.cur_index_y + int(self.edge_length / 4), clicks = 1)
-                    new_screen = main.screen_update()
-                    contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1])
-                cur_select_y = contours_select[0][0][0][1]
-                while math.fabs(cur_select_y - self.cur_index_y) > 20 and Monitor_Flag:
-                    mouseact.mouse_move_click(self.cur_index_x - 13 * self.edge_length, self.cur_index_y + int(self.edge_length / 4), clicks = 1)
-                    new_screen = main.screen_update()
-                    contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1])
-                    cur_select_y = contours_select[0][0][0][1]
+            # new_screen = main.screen_update()
+            # contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1])
+            # if main.Version == 'old':
+            #     while contours_select == [] and Monitor_Flag:
+            #         mouseact.mouse_move_click(self.cur_index_x - 13 * self.edge_length, self.cur_index_y + int(self.edge_length / 4), clicks = 1)
+            #         new_screen = main.screen_update()
+            #         contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1])
+            #     cur_select_y = contours_select[0][0][0][1]
+            #     while math.fabs(cur_select_y - self.cur_index_y) > 20 and Monitor_Flag:
+            #         mouseact.mouse_move_click(self.cur_index_x - 13 * self.edge_length, self.cur_index_y + int(self.edge_length / 4), clicks = 1)
+            #         new_screen = main.screen_update()
+            #         contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1])
+            #         cur_select_y = contours_select[0][0][0][1]
 
     def show_result(self, img_src: cv2.typing.MatLike):
         if self.state == 1:
@@ -109,7 +109,7 @@ class monitor_text():
             print('当前章节任务已完成')
 
     def start_work(self, sidebar_info: monitor_sidebar):
-        while self.cur_index_y > int(main.Screen_Height / 3.5) and Monitor_Flag:
+        while self.cur_index_y > int(main.Screen_Height / 3) and Monitor_Flag:
             if sidebar_info.side == 'left':
                 mouseact.mouse_move_click(sidebar_info.cur_index_x + sidebar_info.edge_length * 5, int(main.Screen_Height / 2))
             elif sidebar_info.side == 'right':
@@ -118,15 +118,15 @@ class monitor_text():
             time.sleep(0.1)
             new_screen = main.screen_update()
             self.update(new_screen, sidebar_info, 0)
-        time.sleep(0.5)
+        time.sleep(0.1)
         if main.Version == 'old':
             mouseact.mouse_move_click(self.cur_index_x + self.edge_length * 29, self.cur_index_y + self.edge_length * 18)
         elif main.Version == 'new':
-            mouseact.mouse_move_click(self.cur_index_x + self.edge_length * 40, self.cur_index_y + self.edge_length * 25)
+            mouseact.mouse_move_click(self.cur_index_x + self.edge_length * 41, self.cur_index_y + self.edge_length * 25)
         time.sleep(0.5)
         pre_screen = main.screen_update()
         mouseact.mouse_move_click(clicks = 1)
-        time.sleep(2)
+        time.sleep(0.2)
         new_screen = main.screen_update()
         state = watching.img_compare(pre_screen, new_screen)
         print(state)
@@ -161,7 +161,7 @@ class monitor_text():
             self.update(new_screen, sidebar_info, 0)
             cur_index_y = self.cur_index_y
             if cur_index_y != 0:
-                if abs(pre_index_y - cur_index_y) < 20:     #任务点仍未完成，即出现黑屏播放水视频情况
+                if abs(pre_index_y - cur_index_y) < 50:     #任务点仍未完成，即出现黑屏播放水视频情况
                     print('视频未结束')
                 else:
                     print('视频结束')

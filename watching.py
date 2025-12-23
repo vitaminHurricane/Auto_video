@@ -12,7 +12,7 @@ def __img_sumarea(contours):
 def __img_filter(contours):
     new_contours = []
     for cnt in contours:
-        if cv2.contourArea(cnt) < 100:
+        if cv2.contourArea(cnt) < 200:
             continue
         else:
             new_contours.append(cnt)
@@ -28,6 +28,11 @@ def img_color_search(src: cv2.typing.MatLike, min_list, max_list):
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     contours = __img_filter(contours)
 
+    # cv2.namedWindow('test', cv2.WINDOW_FREERATIO)
+    # cv2.resizeWindow('test', 400, 300)
+    # cv2.imshow('test', mask)
+    # cv2.waitKey()
+
     valid_contours = []
     edge = 0
     if len(contours) > 0:
@@ -35,7 +40,7 @@ def img_color_search(src: cv2.typing.MatLike, min_list, max_list):
         average_area = sum_area / len(contours)
         edge = int(math.sqrt(average_area))
         for cnt in contours:
-            if math.fabs(average_area - cv2.contourArea(cnt)) / average_area <= 0.3:
+            if math.fabs(average_area - cv2.contourArea(cnt)) / average_area <= 0.5:
                 valid_contours.append(cnt)
         valid_contours = sorted(valid_contours, key = lambda y_loc: y_loc[0][0][1], reverse = False)
 
