@@ -9,16 +9,22 @@ def __img_sumarea(contours):
         sum += area
     return sum
 
-def __img_filter(contours):
+def __img_filter(contours, color: str = 'red'):
     new_contours = []
     for cnt in contours:
-        if cv2.contourArea(cnt) < 200:
-            continue
+        if color == 'red':
+            if cv2.contourArea(cnt) < 200 or cv2.contourArea(cnt) > 900:
+                continue
+            else:
+                new_contours.append(cnt)
         else:
-            new_contours.append(cnt)
+            if cv2.contourArea(cnt) < 900:
+                continue
+            else:
+                new_contours.append(cnt)
     return new_contours
 
-def img_color_search(src: cv2.typing.MatLike, min_list, max_list):
+def img_color_search(src: cv2.typing.MatLike, min_list, max_list, color: str = 'red'):
     search_kernel = np.array((3, 3), np.uint8)              #卷积核
 
     mask_temp = cv2.inRange(src, min_list, max_list)
@@ -26,7 +32,7 @@ def img_color_search(src: cv2.typing.MatLike, min_list, max_list):
     mask = cv2.dilate(mask_temp.copy(), search_kernel, iterations = 4)
     mask = cv2.GaussianBlur(mask, (3, 3), 0)
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    contours = __img_filter(contours)
+    contours = __img_filter(contours, color)
 
     # cv2.namedWindow('test', cv2.WINDOW_FREERATIO)
     # cv2.resizeWindow('test', 400, 300)

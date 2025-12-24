@@ -3,7 +3,6 @@ import watching
 import mouseact
 import main
 import time
-import math
 
 Monitor_Flag = main.start_flag
 
@@ -26,7 +25,7 @@ class monitor_sidebar():
         self.update(monitor_src, 0, self.side)
 
     def update(self, monitor_src: cv2.typing.MatLike, repeat_time: int, side: str):
-        if repeat_time < 15:
+        if repeat_time < 15 and Monitor_Flag:
             self.contours, self.edge_length = watching.img_color_search(monitor_src, main.color_dict['unread_color_red'][0], main.color_dict['unread_color_red'][1])
             if len(self.contours) > 0:
                 self.state = 1
@@ -51,19 +50,22 @@ class monitor_sidebar():
             self.cur_index = index
             self.cur_index_x, self.cur_index_y = watching.img_get_location(self.contours, self.cur_index)
             mouseact.mouse_move_click(self.cur_index_x - 13 * self.edge_length, self.cur_index_y + int(self.edge_length / 4), clicks = 1)
-            # new_screen = main.screen_update()
-            # contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1])
-            # if main.Version == 'old':
-            #     while contours_select == [] and Monitor_Flag:
-            #         mouseact.mouse_move_click(self.cur_index_x - 13 * self.edge_length, self.cur_index_y + int(self.edge_length / 4), clicks = 1)
-            #         new_screen = main.screen_update()
-            #         contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1])
-            #     cur_select_y = contours_select[0][0][0][1]
-            #     while math.fabs(cur_select_y - self.cur_index_y) > 20 and Monitor_Flag:
-            #         mouseact.mouse_move_click(self.cur_index_x - 13 * self.edge_length, self.cur_index_y + int(self.edge_length / 4), clicks = 1)
-            #         new_screen = main.screen_update()
-            #         contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1])
-            #         cur_select_y = contours_select[0][0][0][1]
+            time.sleep(0.2)
+            new_screen = main.screen_update()
+            contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1], 'green')
+            if main.Version == 'old':
+                while contours_select == [] and Monitor_Flag:
+                    mouseact.mouse_move_click(self.cur_index_x - 13 * self.edge_length, self.cur_index_y + int(self.edge_length / 4), clicks = 1)
+                    time.sleep(0.2)
+                    new_screen = main.screen_update()
+                    contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1], 'green')
+                cur_select_y = contours_select[0][0][0][1]
+                while abs(cur_select_y - self.cur_index_y) > 50 and Monitor_Flag:
+                    mouseact.mouse_move_click(self.cur_index_x - 13 * self.edge_length, self.cur_index_y + int(self.edge_length / 4), clicks = 1)
+                    time.sleep(0.2)
+                    new_screen = main.screen_update()
+                    contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1], 'green')
+                    cur_select_y = contours_select[0][0][0][1]
 
     def show_result(self, img_src: cv2.typing.MatLike):
         if self.state == 1:
@@ -87,7 +89,7 @@ class monitor_text():
         self.update(monitor_src, sidebar_info, 0)
 
     def update(self, monitor_src: cv2.typing.MatLike, sidebar_info: monitor_sidebar, repeat_time: int):
-        if repeat_time < 15:     #递归检测出口判断
+        if repeat_time < 15 and Monitor_Flag:     #递归检测出口判断
             self.contours, self.edge_length = watching.img_color_search(monitor_src, main.color_dict['unread_color_yellow'][0], main.color_dict['unread_color_yellow'][1])
             if len(self.contours) > 0:
                 self.state = 1
@@ -109,7 +111,7 @@ class monitor_text():
             print('当前章节任务已完成')
 
     def start_work(self, sidebar_info: monitor_sidebar):
-        while self.cur_index_y > int(main.Screen_Height / 3) and Monitor_Flag:
+        while self.cur_index_y > int(main.Screen_Height / 2.5) and Monitor_Flag:
             if sidebar_info.side == 'left':
                 mouseact.mouse_move_click(sidebar_info.cur_index_x + sidebar_info.edge_length * 5, int(main.Screen_Height / 2))
             elif sidebar_info.side == 'right':
