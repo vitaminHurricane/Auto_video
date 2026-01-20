@@ -4,11 +4,11 @@
 
 ##################################配置区域##########################################
 
-SideBar_Direct = 'right'         #侧边栏位置，只能为left或者right
+SideBar_Direct = 'left'         #侧边栏位置，只能为left或者right
 Screen_Width = 2560             #屏幕尺寸->宽度
 Screen_Height = 1600            #屏幕尺寸->高度
 Version = 'old'                 #学习通网页版版本，只能为old或者new
-Original = True                 #是否是原生板网页（未装插件），原生态则为True，使用了插件则为False（这里装插件的情况下只能适配edge浏览器上的Dark Reader插件）
+Original = False                 #是否是原生板网页（未装插件），原生态则为True，使用了插件则为False（这里装插件的情况下只能适配edge浏览器上的Dark Reader插件）
 
 ##################################结束配置##########################################
 

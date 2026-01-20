@@ -11,8 +11,4 @@ def mouse_scroll(direct: str, step: int):
     elif direct == 'down':
         gui.scroll(clicks = -abs(step))
 
-def mouse_update():
-    pass
-
-
         

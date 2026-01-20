@@ -15,6 +15,7 @@ Original = user_config.Original                 #是否是原生板网页（未�
 start_flag = False
 
 #关键点色彩阈值
+#通道分别对应B，G，R，前三个最小值，后三个最大值
 if Original:    #原生态配色
     if Version == 'old':
         color_dict = {

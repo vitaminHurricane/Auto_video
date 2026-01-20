@@ -2,6 +2,10 @@ import cv2
 import numpy as np
 import math
 
+Test_Flag = False
+First_Flag = True
+Referance_Unread_X = 0
+
 def __img_sumarea(contours):
     sum = 0
     for cnt in contours:
@@ -12,16 +16,33 @@ def __img_sumarea(contours):
 def __img_filter(contours, color: str = 'red'):
     new_contours = []
     for cnt in contours:
-        if color == 'red':
+        if color == 'red':  #过大或过小的目标都过滤掉
             if cv2.contourArea(cnt) < 200 or cv2.contourArea(cnt) > 900:
                 continue
             else:
                 new_contours.append(cnt)
-        else:
+        elif color == 'green':  #过滤过小的目标
             if cv2.contourArea(cnt) < 900:
                 continue
             else:
                 new_contours.append(cnt)
+        elif color == 'yellow':  #过大或过小的目标都过滤掉
+            global First_Flag, Referance_Unread_X
+            if First_Flag:                  #如果是第一次检测未读任务点，则记录下未读任务点的x坐标以作参考
+                if cv2.contourArea(cnt) < 200 or cv2.contourArea(cnt) > 900:
+                    continue
+                else:
+                    new_contours.append(cnt)
+                if new_contours != []:      #检测到任务点后只更新一次参考位置
+                    reference_x = new_contours[0][0][0][0]
+                    Referance_Unread_X = reference_x
+                    print(Referance_Unread_X)
+                    First_Flag = False
+            else:
+                if (cv2.contourArea(cnt) < 200 or cv2.contourArea(cnt) > 900) and abs(Referance_Unread_X - cnt[0][0][0]) > 30:
+                    continue
+                else:
+                    new_contours.append(cnt)
     return new_contours
 
 def img_color_search(src: cv2.typing.MatLike, min_list, max_list, color: str = 'red'):
@@ -34,10 +55,11 @@ def img_color_search(src: cv2.typing.MatLike, min_list, max_list, color: str = '
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     contours = __img_filter(contours, color)
 
-    # cv2.namedWindow('test', cv2.WINDOW_FREERATIO)
-    # cv2.resizeWindow('test', 400, 300)
-    # cv2.imshow('test', mask)
-    # cv2.waitKey()
+    if Test_Flag:
+        cv2.namedWindow('test', cv2.WINDOW_FREERATIO)
+        cv2.resizeWindow('test', 400, 300)
+        cv2.imshow('test', mask)
+        cv2.waitKey()
 
     valid_contours = []
     edge = 0

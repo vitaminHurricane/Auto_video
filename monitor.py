@@ -90,7 +90,7 @@ class monitor_text():
 
     def update(self, monitor_src: cv2.typing.MatLike, sidebar_info: monitor_sidebar, repeat_time: int):
         if repeat_time < 15 and Monitor_Flag:     #递归检测出口判断
-            self.contours, self.edge_length = watching.img_color_search(monitor_src, main.color_dict['unread_color_yellow'][0], main.color_dict['unread_color_yellow'][1])
+            self.contours, self.edge_length = watching.img_color_search(monitor_src, main.color_dict['unread_color_yellow'][0], main.color_dict['unread_color_yellow'][1], 'yellow')
             if len(self.contours) > 0:
                 self.state = 1
                 self.unread_num = len(self.contours)
