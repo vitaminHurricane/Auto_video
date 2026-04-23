@@ -55,7 +55,22 @@ def main():
     input()
     
     with mss.mss() as sct:                                  #获取主显示器的分辨率（也可指定区域：top, left, width, height）
-        screen_monitor = sct.monitors[1]                    #monitors[0]是整个屏幕，monitors[1]是主显示器
+        # screen_monitor = sct.monitors[1]                    #monitors[0]是整个屏幕，monitors[1]是主显示器
+        print('检测到显示器数量为：%d' % (len(sct.monitors) - 1))
+
+        if (len(sct.monitors) - 1) == 1:
+            print('默认使用主屏幕')
+            screen_monitor = sct.monitors[1]
+        else:
+            print('按''1''选择主屏幕,按''2''选择副屏')
+            num = input().strip()
+            while num != '1' and num != '2':
+                print('请输入有效选择：', end = '')
+                num = input().strip()
+            if num == '1':
+                screen_monitor = sct.monitors[1]
+            else:
+                screen_monitor = sct.monitors[2]
 
         while start_flag:
             screenshot = sct.grab(screen_monitor)
