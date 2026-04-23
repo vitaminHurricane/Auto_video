@@ -65,7 +65,7 @@ def main():
             sidebar = monitor.monitor_sidebar(frame_bgr.copy(), SideBar_Direct) #创建侧边栏监视对象
             while sidebar.state == 1 and start_flag:                    #侧边栏有未完成章节
                 sidebar.select_index(0)
-                time.sleep(4)                                           #切换章节，等待四秒确保内容刷新完毕
+                time.sleep(20)                                          #切换章节，等待20秒确保内容刷新完毕
                 frame_bgr = screen_update()                             #内容刷新完毕后更新屏幕
                 text = monitor.monitor_text(frame_bgr.copy(), sidebar)  #创建文本监视对象
                 while text.state == 1 and start_flag:                   #检测到章节内有未完成任务点

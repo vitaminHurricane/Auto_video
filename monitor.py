@@ -128,12 +128,12 @@ class monitor_text():
         time.sleep(0.5)
         pre_screen = main.screen_update()
         mouseact.mouse_move_click(clicks = 1)
-        time.sleep(0.2)
+        time.sleep(5)                 #等待5秒屏幕更新
         new_screen = main.screen_update()
         state = watching.img_compare(pre_screen, new_screen)
         print(state)
-        if state >= 0.99999:          #当state等于1，判断当前任务点为ppt课件
-            state = 1
+        if state >= 0.999999:          #当state等于1，判断当前任务点为ppt课件
+            state = 1                  #state置1
             print('是ppt任务')
             mouseact.mouse_move_click(side = 'middle', clicks = 1)
             if main.Version == 'old':
@@ -142,37 +142,40 @@ class monitor_text():
                 mouseact.mouse_move_click(self.cur_index_x + self.edge_length * 40, self.cur_index_y + self.edge_length * 42)
         else:                   #其余情况，判断当前任务点为视频
             print('是视频任务')
-            pass
         pre_screen = new_screen
-        time.sleep(1)
+        time.sleep(5)
         new_screen = main.screen_update()
         similarity = watching.img_compare(pre_screen, new_screen) 
+        #视频和ppt初期都做同一种处理，对比图像变化程度判断是否结束
         while similarity != 1.0 and Monitor_Flag:
             pre_screen = new_screen
-            time.sleep(1)
+            time.sleep(5)
             new_screen = main.screen_update()
             similarity = watching.img_compare(pre_screen, new_screen) 
-            if similarity >= 0.99999:
+            if similarity >= 0.999999:          #大于0.999999初步判断视频播放完毕和ppt翻阅完毕
                 similarity = 1
         finish_flag = False
-        while state != 1 and Monitor_Flag and not finish_flag:      #检测到任务点是视频的情况下的保留判断，防止小人在视频里不给画面只放音乐水时长导致任务点判断失误（真没招了）
-            pre_screen = new_screen
-            pre_index_y = self.cur_index_y
-            time.sleep(1)
-            new_screen = main.screen_update()
-            self.update(new_screen, sidebar_info, 0)
-            cur_index_y = self.cur_index_y
-            if cur_index_y != 0:
-                if abs(pre_index_y - cur_index_y) < 50:     #任务点仍未完成，即出现黑屏播放水视频情况
-                    print('视频未结束')
+        #检测到任务点是视频的情况下的保留判断，防止小人在视频里不给画面只放音乐水时长导致任务点判断失误（真没招了）
+        if state != 1:
+            while state != 1 and Monitor_Flag and not finish_flag:      
+                pre_screen = new_screen
+                pre_index_y = self.cur_index_y
+                time.sleep(5)
+                new_screen = main.screen_update()
+                self.update(new_screen, sidebar_info, 0)
+                cur_index_y = self.cur_index_y
+                if cur_index_y != 0:
+                    if abs(pre_index_y - cur_index_y) < 100:     #任务点仍未完成，即出现黑屏播放水视频情况
+                        pass
+                    else:
+                        print('视频结束')
+                        finish_flag = True
                 else:
-                    print('视频结束')
-                    finish_flag = True
-            else:
-                break
-        if state >= 0.99999:          #是ppt任务则在结束时更新，视频的更新再上述while里更新过了
-            mouseact.mouse_move_click(clicks = 1)
-            self.update(new_screen, sidebar_info, 0)
+                    break
+        else:
+            if state >= 0.999999:          #是ppt任务则在结束时更新，视频的更新再上述while里更新过了
+                mouseact.mouse_move_click(clicks = 1)
+                self.update(new_screen, sidebar_info, 0)
 
     def show_result(self, img_src: cv2.typing.MatLike):
         if self.state == 1:
@@ -183,3 +186,4 @@ class monitor_text():
             cv2.waitKey()
         else:
             print('无未完成任务')
+

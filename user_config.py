@@ -4,7 +4,7 @@
 
 ##################################配置区域##########################################
 
-SideBar_Direct = 'left'         #侧边栏位置，只能为left或者right
+SideBar_Direct = 'right'         #侧边栏位置，只能为left或者right
 Screen_Width = 2560             #屏幕尺寸->宽度
 Screen_Height = 1600            #屏幕尺寸->高度
 Version = 'old'                 #学习通网页版版本，只能为old或者new

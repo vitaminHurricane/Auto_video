@@ -1,4 +1,3 @@
-import time
 from pynput import mouse
 import pyautogui as gui
 
