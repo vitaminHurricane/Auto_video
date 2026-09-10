@@ -5,6 +5,7 @@ import main
 import time
 
 Monitor_Flag = main.start_flag
+pre_index = 0
 
 def monitor_start():    #所有监视器控制
     global Monitor_Flag
@@ -36,7 +37,7 @@ class monitor_sidebar():
                     mouseact.mouse_move_click(int(main.Screen_Width / 11), int(main.Screen_Height / 2))
                 elif side == 'right':
                     mouseact.mouse_move_click(int(main.Screen_Width / 11 * 10), int(main.Screen_Height / 2))
-                time.sleep(0.1)
+                time.sleep(0.2)
                 mouseact.mouse_scroll('down', 30 * 12)
                 new_screen = main.screen_update()
                 repeat_time += 1
@@ -50,22 +51,29 @@ class monitor_sidebar():
             self.cur_index = index
             self.cur_index_x, self.cur_index_y = watching.img_get_location(self.contours, self.cur_index)
             mouseact.mouse_move_click(self.cur_index_x - 13 * self.edge_length, self.cur_index_y + int(self.edge_length / 4), clicks = 1)
-            time.sleep(0.2)
+            time.sleep(0.3)
             new_screen = main.screen_update()
-            contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1], 'green')
-            if main.Version == 'old':
-                while contours_select == [] and Monitor_Flag:
-                    mouseact.mouse_move_click(self.cur_index_x - 13 * self.edge_length, self.cur_index_y + int(self.edge_length / 4), clicks = 1)
-                    time.sleep(0.2)
-                    new_screen = main.screen_update()
-                    contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1], 'green')
-                cur_select_y = contours_select[0][0][0][1]
-                while abs(cur_select_y - self.cur_index_y) > 50 and Monitor_Flag:
-                    mouseact.mouse_move_click(self.cur_index_x - 13 * self.edge_length, self.cur_index_y + int(self.edge_length / 4), clicks = 1)
-                    time.sleep(0.2)
-                    new_screen = main.screen_update()
-                    contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1], 'green')
-                    cur_select_y = contours_select[0][0][0][1]
+
+            global pre_index
+            if abs(pre_index - self.cur_index_y) < 10:      #第二次进入同一个章节
+                mouseact.mouse_move_click(1157, 364, clicks = 1)
+                time.sleep(0.3)
+            pre_index = self.cur_index_y
+
+            # contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1], 'green')
+            # if main.Version == 'old':
+            #     while contours_select == [] and Monitor_Flag:
+            #         mouseact.mouse_move_click(self.cur_index_x - 13 * self.edge_length, self.cur_index_y + int(self.edge_length / 4), clicks = 1)
+            #         time.sleep(0.3)
+            #         new_screen = main.screen_update()
+            #         contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1], 'green')
+            #     cur_select_y = contours_select[0][0][0][1]
+            #     while abs(cur_select_y - self.cur_index_y) > 50 and Monitor_Flag:
+            #         mouseact.mouse_move_click(self.cur_index_x - 13 * self.edge_length, self.cur_index_y + int(self.edge_length / 4), clicks = 1)
+            #         time.sleep(0.3)
+            #         new_screen = main.screen_update()
+            #         contours_select, _ = watching.img_color_search(new_screen, main.color_dict['select_green'][0], main.color_dict['select_green'][1], 'green')
+            #         cur_select_y = contours_select[0][0][0][1]
 
     def show_result(self, img_src: cv2.typing.MatLike):
         if self.state == 1:
@@ -89,7 +97,7 @@ class monitor_text():
         self.update(monitor_src, sidebar_info, 0)
 
     def update(self, monitor_src: cv2.typing.MatLike, sidebar_info: monitor_sidebar, repeat_time: int):
-        if repeat_time < 15 and Monitor_Flag:     #递归检测出口判断
+        if repeat_time < 8 and Monitor_Flag:     #递归检测出口判断
             self.contours, self.edge_length = watching.img_color_search(monitor_src, main.color_dict['unread_color_yellow'][0], main.color_dict['unread_color_yellow'][1], 'yellow')
             if len(self.contours) > 0:
                 self.state = 1
@@ -101,7 +109,7 @@ class monitor_text():
                 elif sidebar_info.side == 'right':
                     mouseact.mouse_move_click(sidebar_info.cur_index_x - sidebar_info.edge_length * 20, int(main.Screen_Height / 2))
                 mouseact.mouse_scroll('down', sidebar_info.edge_length * 30)
-                time.sleep(0.2)
+                time.sleep(0.1)
                 new_screen = main.screen_update()
                 repeat_time += 1
                 self.update(new_screen, sidebar_info, repeat_time)
@@ -120,15 +128,15 @@ class monitor_text():
             time.sleep(0.1)
             new_screen = main.screen_update()
             self.update(new_screen, sidebar_info, 0)
-        time.sleep(0.1)
+        time.sleep(0.3)
         if main.Version == 'old':
             mouseact.mouse_move_click(self.cur_index_x + self.edge_length * 29, self.cur_index_y + self.edge_length * 18)
         elif main.Version == 'new':
             mouseact.mouse_move_click(self.cur_index_x + self.edge_length * 41, self.cur_index_y + self.edge_length * 25)
-        time.sleep(0.5)
+        time.sleep(1)
         pre_screen = main.screen_update()
         mouseact.mouse_move_click(clicks = 1)
-        time.sleep(5)                 #等待5秒屏幕更新
+        time.sleep(2)                 #等待5秒屏幕更新
         new_screen = main.screen_update()
         state = watching.img_compare(pre_screen, new_screen)
         print(state)
@@ -149,24 +157,27 @@ class monitor_text():
         #视频和ppt初期都做同一种处理，对比图像变化程度判断是否结束
         while similarity != 1.0 and Monitor_Flag:
             pre_screen = new_screen
-            time.sleep(5)
+            time.sleep(2)
             new_screen = main.screen_update()
             similarity = watching.img_compare(pre_screen, new_screen) 
             if similarity >= 0.999999:          #大于0.999999初步判断视频播放完毕和ppt翻阅完毕
                 similarity = 1
         finish_flag = False
         #检测到任务点是视频的情况下的保留判断，防止小人在视频里不给画面只放音乐水时长导致任务点判断失误（真没招了）
+        time_counter = 0    #用于计数
         if state != 1:
             while state != 1 and Monitor_Flag and not finish_flag:      
                 pre_screen = new_screen
                 pre_index_y = self.cur_index_y
-                time.sleep(5)
+                time.sleep(2)
                 new_screen = main.screen_update()
                 self.update(new_screen, sidebar_info, 0)
                 cur_index_y = self.cur_index_y
                 if cur_index_y != 0:
                     if abs(pre_index_y - cur_index_y) < 100:     #任务点仍未完成，即出现黑屏播放水视频情况
                         pass
+                    #判断任务点未完成但视频画面不动的原因
+                    #
                     else:
                         print('视频结束')
                         finish_flag = True

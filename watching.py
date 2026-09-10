@@ -36,7 +36,7 @@ def __img_filter(contours, color: str = 'red'):
                 if new_contours != []:      #检测到任务点后只更新一次参考位置
                     reference_x = new_contours[0][0][0][0]
                     Referance_Unread_X = reference_x
-                    print(Referance_Unread_X)
+                    # print(Referance_Unread_X)
                     First_Flag = False
             else:
                 if (cv2.contourArea(cnt) < 200 or cv2.contourArea(cnt) > 900) and abs(Referance_Unread_X - cnt[0][0][0]) > 30:
